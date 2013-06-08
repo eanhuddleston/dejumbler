@@ -1,7 +1,7 @@
 class Dejumbler
   def initialize
     @corpus = read_corpus
-    @tree = build_tree(@corpus) # a trie tree
+    @tree = build_trie_tree(@corpus)
   end
 
   def dejumble(input)
@@ -45,7 +45,7 @@ class Dejumbler
     current_node = @tree
 
     possible_word.each_char do |char|
-      match = current_node.children.select { |child| child.value == char }
+      match = find_child(current_node, char)
       if match.empty?
         return false
       else
@@ -95,15 +95,13 @@ class Dejumbler
     corpus
   end
 
-  def build_tree(corpus)
+  def build_trie_tree(corpus)
     top_node = TreeNode.new(nil, nil)
     corpus = read_corpus
     corpus.each do |word|
       node = top_node
       word.each_char do |char|
-        letter_found = false
-        # is char already in tree?
-        match = node.children.select { |child| child.value == char }
+        match = find_child(node, char)
         if match.empty?
           new_node = TreeNode.new(node, char)
           node.children << new_node
@@ -115,6 +113,10 @@ class Dejumbler
     end
 
     top_node
+  end
+
+  def find_child(node, char)
+    node.children.select { |child| child.value == char }
   end
 end
 
