@@ -1,30 +1,35 @@
-def dejumble(word)
-  to_check = word.split(//)
-  last_round = word.split(//)
-  word_letters = word.split(//)
+def dejumble(input)
+  all_distinct_combos = all_distinct_letter_combos(input)
+  new_real_words = find_new_real_words(all_distinct_combos, input)
+  
+  new_real_words
+end
 
-  word.length.times do
+def all_distinct_letter_combos(input)
+  all_combos = input.split(//)
+  last_round = input.split(//)
+  input_letters = input.split(//)
+
+  input.length.times do
     next_round = []
     last_round.each do |word_base|
-      word_letters.each do |next_letter|
-        unless word_base.count(next_letter) >=
-              word_letters.count(next_letter)
-          to_check << word_base + next_letter
+      input_letters.each do |next_letter|
+        unless ( word_base.count(next_letter) >=
+            input_letters.count(next_letter) ) ||
+            all_combos.include?(word_base + next_letter)
+
+          all_combos << word_base + next_letter
           next_round << word_base + next_letter
         end
       end
     end
-
     last_round = next_round.dup
   end
 
-  new_real_words = find_real_words(to_check, word)
-  distinct_words = remove_duplicates(new_real_words).sort
-  
-  distinct_words
+  all_combos
 end
 
-def find_real_words(to_check, word)
+def find_new_real_words(to_check, word)
   new_real_words = []
   corpus = read_corpus
   to_check.each do |possible_word|
@@ -35,7 +40,7 @@ def find_real_words(to_check, word)
     end
   end
 
-  new_real_words
+  new_real_words.sort
 end
 
 def corpus_includes?(possible_word, corpus) 
@@ -61,13 +66,4 @@ def read_corpus
   end
 
   corpus
-end
-
-def remove_duplicates(new_real_words)
-  distinct_words = []
-  new_real_words.each do |word|
-    distinct_words << word if !distinct_words.include?(word)
-  end
-
-  distinct_words
 end
